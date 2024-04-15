@@ -1,6 +1,7 @@
 package svcs
 
 import java.io.File
+import java.nio.file.Paths
 
 fun help() {
     println("These are SVCS commands:\n" +
@@ -55,8 +56,28 @@ fun config(name: String?) {
 }
 
 fun add(file: String?) {
-    println("Add a file to the index.")
+    if(file !== null) {  //проверка есть ли файлы в папке сделать
+        println("Add a file to the index.")
+        val trackedFile = readLine()?.trim() ?: ""
+        val workFilesDir = File("work_files")
+        if (trackedFile.isNotBlank()) {
+            val sourceFile = File(trackedFile)
+            if (sourceFile.exists()) {
+                val destinationPath = Paths.get(workFilesDir.toString(), trackedFile)
+                val destinationFile = destinationPath.toFile()
+                try {
+                    sourceFile.copyTo(destinationFile, true)
+                    println("File '$trackedFile' is tracked.") //вывод всех файлов отслеживаемых сделать
+                } catch (e: Exception) {}
+            } else {
+                println("Can't find '$trackedFile'.")
+            }
+    } else {
+        println("Please enter a valid file name.")
+        }
+    }
 }
+
 //fun main(args: Array<String>)
 fun main() {
     val args = readln().split(" ") //test
