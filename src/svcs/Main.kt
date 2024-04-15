@@ -10,6 +10,7 @@ fun help() {
             "commit     Save changes.\n" +
             "checkout   Restore a file.")
 }
+
 fun isValidInput(username: String): Boolean { //
     val regex = Regex("^[a-zA-Z][a-zA-Z0-9]*$")
     return username.isNotBlank() && username.length in 3..20 && regex.matches(username)
@@ -18,12 +19,20 @@ fun isValidInput(username: String): Boolean { //
 fun config(name: String?) {
     val workingDirectory = System.getProperty("user.dir")
     val separator = File.separator
-    val absolutePath = "${workingDirectory}${separator}vcs"
-    val dir = File(absolutePath)
-    if (!dir.exists()) {
-        dir.mkdirs()
+    val workDir = File(workingDirectory, "work_files")
+    if (!workDir.exists()) {
+        try {
+            workDir.mkdirs()
+        } catch (_: Exception) {}
     }
-    val configFile = dir.resolve("config.txt")
+
+    val vcsDir = File(workDir, "vcs")
+    if (!vcsDir.exists()) {
+        try {
+            vcsDir.mkdirs()
+        } catch (e: Exception) {}
+    }
+    val configFile = vcsDir.resolve("config.txt")
     if (!configFile.exists()) {
         try {
             configFile.createNewFile()
@@ -38,19 +47,23 @@ fun config(name: String?) {
             val username = readLine()?.trim() ?: ""
             if(isValidInput(username)) {
                 configFile.writeText(username)
+                return
             }
         }
         println("The username is $configValue")
     }
 }
 
+fun add(file: String?) {
+    println("Add a file to the index.")
+}
 //fun main(args: Array<String>)
 fun main() {
     val args = readln().split(" ") //test
     when(args.firstOrNull()?.lowercase()?.trim()) {
         null, "--help" -> help()
         "config" -> config(args.getOrNull(1)?.trim())
-        "add" -> println("Add a file to the index.")
+        "add" -> add(args.getOrNull(1)?.trim())
         "log" -> println("Show commit logs.")
         "commit" -> println("Save changes.")
         "checkout" -> println("Restore a file.")
