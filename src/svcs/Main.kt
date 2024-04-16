@@ -4,8 +4,7 @@ import java.io.File
 import java.nio.file.Paths
 import kotlin.io.path.listDirectoryEntries
 
-val workingDirectory = System.getProperty("user.dir")
-val workDir = File(workingDirectory, "work_files")
+val workDir = File(System.getProperty("user.dir"))
 val vcsDir = File(workDir, "vcs")
 val configFile = vcsDir.resolve("config.txt")
 val indexFile =vcsDir.resolve("index.txt") //
@@ -25,11 +24,6 @@ fun isValidInput(username: String): Boolean { //
 }
 
 fun makeConfigAndIndexFiles(){
-    if (!workDir.exists()) {
-        try {
-            workDir.mkdirs()
-        } catch (_: Exception) {}
-    }
     if (!vcsDir.exists()) {
         try {
             vcsDir.mkdirs()
