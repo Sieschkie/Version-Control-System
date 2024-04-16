@@ -39,9 +39,7 @@ fun makeConfigAndIndexFiles(){
 
 }
 fun config(name: String?) {
-    if (name !== null){
-        configFile.writeText(name)
-    } else {
+    if (name == null) {
         val configValue = configFile.readText()
         if(configValue.isEmpty()) {
             println("Please, tell me who you are.")
@@ -51,7 +49,10 @@ fun config(name: String?) {
                 return
             }
         }
-        println("The username is $configValue")
+        println("The username is $configValue.")
+    } else {
+        configFile.writeText(name)
+        println("The username is $name.")
     }
 }
 fun add(trackedFile: String?) {
@@ -59,8 +60,8 @@ fun add(trackedFile: String?) {
         if (trackedFile.isNotBlank()) {
             val sourceFile = File(trackedFile)
             if (sourceFile.exists()) {
-                    indexFile.appendText("$trackedFile \n")
-                    println("File '$trackedFile' is tracked.") //вывод всех файлов отслеживаемых сделать
+                    indexFile.appendText("$trackedFile\n")
+                    println("The File '$trackedFile' is tracked.") //вывод всех файлов отслеживаемых сделать
             } else {
                 println("Can't find '$trackedFile'.")
             }
@@ -78,7 +79,7 @@ fun add(trackedFile: String?) {
     }
 }
 
-fun main(args: Array<String>){
+fun main(args: Array<String>) {
 //fun main() { //test
     makeConfigAndIndexFiles()
     //val args = readln().split(" ") //test
