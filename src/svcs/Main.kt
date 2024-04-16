@@ -1,7 +1,6 @@
 package svcs
 
 import java.io.File
-import java.nio.file.Paths
 
 val workDir = File(System.getProperty("user.dir"))
 val vcsDir = File(workDir, "vcs")
@@ -16,10 +15,11 @@ fun help() {
             "commit     Save changes.\n" +
             "checkout   Restore a file.")
 }
-fun isValidInput(username: String): Boolean { //
-    val regex = Regex("^[a-zA-Z][a-zA-Z0-9]*$")
-    return username.isNotBlank() && username.length in 3..20 && regex.matches(username)
+fun isValidInput(input: String): Boolean {
+    val regex = Regex("^[a-zA-Z][a-zA-Z0-9_.]*$")
+    return input.isNotBlank() && input.length in 3..20 && regex.matches(input)
 }
+
 fun makeConfigAndIndexFiles(){
     if (!vcsDir.exists()) {
         try {
@@ -38,6 +38,7 @@ fun makeConfigAndIndexFiles(){
     }
 
 }
+
 fun config(name: String?) {
     if (name == null) {
         val configValue = configFile.readText()
@@ -47,12 +48,14 @@ fun config(name: String?) {
             if(isValidInput(username)) {
                 configFile.writeText(username)
                 return
-            }
+            } else { println("The '$name' contains prohibited characters.") }
         }
         println("The username is $configValue.")
     } else {
-        configFile.writeText(name)
-        println("The username is $name.")
+        if(isValidInput(name)) {
+            configFile.writeText(name)
+            println("The username is $name.")
+        }
     }
 }
 fun add(trackedFile: String?) {
@@ -60,8 +63,10 @@ fun add(trackedFile: String?) {
         if (trackedFile.isNotBlank()) {
             val sourceFile = File(trackedFile)
             if (sourceFile.exists()) {
+                if(isValidInput(trackedFile)) {
                     indexFile.appendText("$trackedFile\n")
-                    println("The File '$trackedFile' is tracked.") //вывод всех файлов отслеживаемых сделать
+                    println("The File '$trackedFile' is tracked.")
+                } else { println("The '$trackedFile' contains prohibited characters.") }
             } else {
                 println("Can't find '$trackedFile'.")
             }
@@ -71,7 +76,9 @@ fun add(trackedFile: String?) {
         if(indexValue.isEmpty()) {
             println("Add a file to the index.")
             val track = readln()
-            add(track)
+            if(isValidInput(track)) {
+                add(track)
+            }
         } else {
             println("Tracked files:")
             indexValue.forEach{println(it)}
