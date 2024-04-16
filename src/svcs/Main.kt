@@ -95,7 +95,9 @@ fun commit() {
 }
 
 fun main(args: Array<String>) {
+//fun main() { //test
     makeConfigAndIndexFiles()
+    //val args = readln().split(" ") //test
     when(args.firstOrNull()?.lowercase()?.trim()) {
         null, "--help" -> help()
         "config" -> config(args.getOrNull(1)?.trim())
