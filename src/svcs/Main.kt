@@ -2,7 +2,6 @@ package svcs
 
 import java.io.File
 import java.nio.file.Paths
-import kotlin.io.path.listDirectoryEntries
 
 val workDir = File(System.getProperty("user.dir"))
 val vcsDir = File(workDir, "vcs")
@@ -17,12 +16,10 @@ fun help() {
             "commit     Save changes.\n" +
             "checkout   Restore a file.")
 }
-
 fun isValidInput(username: String): Boolean { //
     val regex = Regex("^[a-zA-Z][a-zA-Z0-9]*$")
     return username.isNotBlank() && username.length in 3..20 && regex.matches(username)
 }
-
 fun makeConfigAndIndexFiles(){
     if (!vcsDir.exists()) {
         try {
@@ -41,7 +38,6 @@ fun makeConfigAndIndexFiles(){
     }
 
 }
-
 fun config(name: String?) {
     if (name !== null){
         configFile.writeText(name)
@@ -63,71 +59,25 @@ fun add(trackedFile: String?) {
         if (trackedFile.isNotBlank()) {
             val sourceFile = File(trackedFile)
             if (sourceFile.exists()) {
-                val destinationPath = Paths.get(workDir.toString(), trackedFile)
-                val destinationFile = destinationPath.toFile()
-                try {
-                    sourceFile.copyTo(destinationFile, true)
-                    indexFile.appendText(trackedFile)
+                    indexFile.appendText("$trackedFile \n")
                     println("File '$trackedFile' is tracked.") //вывод всех файлов отслеживаемых сделать
-                } catch (e: Exception) {}
             } else {
                 println("Can't find '$trackedFile'.")
             }
-        } else {
-            println("Please enter a valid file name.")
         }
     } else {
-        val indexValue = indexFile.readText()
+        val indexValue = indexFile.readLines()
         if(indexValue.isEmpty()) {
             println("Add a file to the index.")
-            val track = readln().toString()
+            val track = readln()
             add(track)
         } else {
             println("Tracked files:")
-            indexValue.forEach { println(it) }
+            indexValue.forEach{println(it)}
         }
-    }
-}
-/*fun addTrackedFile(trackedFile: String) {
-    if (trackedFile.isNotBlank()) {
-        val sourceFile = File(trackedFile)
-        if (sourceFile.exists()) {
-            val destinationPath = Paths.get(workDir.toString(), trackedFile)
-            val destinationFile = destinationPath.toFile()
-            try {
-                sourceFile.copyTo(destinationFile, true)
-                println("File '${destinationPath.listDirectoryEntries()}' is tracked.") //вывод всех файлов отслеживаемых сделать
-            } catch (e: Exception) {}
-        } else {
-            println("Can't find '$trackedFile'.")
-        }
-    } else {
-        println("Please enter a valid file name.")
     }
 }
 
-fun add(file: String?) {
-    if(file == null) {
-        val files = workDir.walkTopDown()
-                .filter { it.isFile }
-                .toList()
-        if(files.isNotEmpty()) {
-            println("Tracked files:") //if files existed
-            files.forEach { println(it) }
-        } else {
-            println("Add a file to the index.") // add fun
-            val trackedFile = readln().toString()
-            addTrackedFile(trackedFile)
-            }
-    } else { //если имя файла передали
-        if(!File(file).exists()) {
-            println("Can't find '$file'.")
-        } else {
-            addTrackedFile(file)
-        }
-    }
-}
-*/
 fun main(args: Array<String>){
 //fun main() { //test
     makeConfigAndIndexFiles()
