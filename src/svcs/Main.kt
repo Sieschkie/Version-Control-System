@@ -86,16 +86,22 @@ fun add(trackedFile: String?) {
     }
 }
 
+fun log() {
+    println("Show commit logs.")
+}
+
+fun commit() {
+    println("Save changes.")
+}
+
 fun main(args: Array<String>) {
-//fun main() { //test
     makeConfigAndIndexFiles()
-    //val args = readln().split(" ") //test
     when(args.firstOrNull()?.lowercase()?.trim()) {
         null, "--help" -> help()
         "config" -> config(args.getOrNull(1)?.trim())
         "add" -> add(args.getOrNull(1)?.trim())
-        "log" -> println("Show commit logs.")
-        "commit" -> println("Save changes.")
+        "log" -> log()
+        "commit" -> commit()
         "checkout" -> println("Restore a file.")
         else -> println("'${args[0]}' is not a SVCS command.")
     }
