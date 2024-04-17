@@ -166,9 +166,7 @@ fun writeLogs(id: String, message: String) {
 }
 
 fun main(args: Array<String>) {
-//fun main() { //test
     makeDirAndFiles()
-    //val args = readln().split(" ") //test
     val arg = args.getOrNull(1)?.trim()
     when(args.firstOrNull()?.lowercase()?.trim()) {
         null, "--help" -> help()
