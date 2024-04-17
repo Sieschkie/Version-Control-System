@@ -4,6 +4,7 @@ import java.io.File
 
 val workDir = File(System.getProperty("user.dir"))
 val vcsDir = File(workDir, "vcs")
+val commitsDir = File(workDir, "commits")
 val configFile = vcsDir.resolve("config.txt")
 val indexFile =vcsDir.resolve("index.txt") //
 
@@ -22,19 +23,16 @@ fun isValidInput(input: String): Boolean {
 
 fun makeConfigAndIndexFiles(){
     if (!vcsDir.exists()) {
-        try {
             vcsDir.mkdirs()
-        } catch (e: Exception) {}
+    }
+    if (!commitsDir.exists()) {
+            vcsDir.mkdirs()
     }
     if (!configFile.exists()) {
-        try {
             configFile.createNewFile()
-        } catch (_: Exception) {}
     }
     if (!indexFile.exists()) {
-        try {
             indexFile.createNewFile()
-        } catch (_: Exception) {}
     }
 
 }
