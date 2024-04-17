@@ -108,8 +108,9 @@ fun commit(commit : String?) {
     } else {
         val trackedFiles = indexFile.readLines()
         val commitID = UUID.randomUUID().toString()
-        val commitDir = if (commitsDir.listFiles()?.isNotEmpty() == true) {
-            val lastCommitDir = commitsDir.listFiles()!!.last()
+        val lastCommitID = logFile.readLines().firstOrNull()?.substringAfter("commit ")
+        val commitDir = if (lastCommitID != null && commitsDir.listFiles()?.isNotEmpty() == true) {
+            val lastCommitDir = File(commitsDir, lastCommitID)
             val changed = checkChanges(trackedFiles, lastCommitDir, commitID)
             if (changed) {
                 File(commitsDir, commitID).apply { mkdir() }
@@ -135,7 +136,7 @@ fun writeLogs(id: String, message: String) {
     val log = logFile.readText()
     logFile.writeText("commit $id\n")
     logFile.appendText("Author: $author\n")
-    logFile.appendText("$message\n")
+    logFile.appendText("${message.filter{it !='"'}}\n")
     logFile.appendText("\n$log")
 }
 
