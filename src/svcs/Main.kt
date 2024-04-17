@@ -102,8 +102,9 @@ fun checkChanges(trackedFiles: List<String>, lastCommitDir: File, commitID: Stri
 }
 
 fun commit(commit : String?) {
-    if (commit == null) {
+    if (commit == null || commit.isBlank()) {
         println("Message was not passed.")
+        return
     } else {
         val trackedFiles = indexFile.readLines()
         val commitID = UUID.randomUUID().toString()
@@ -124,8 +125,18 @@ fun commit(commit : String?) {
             val commitFile = File(commitDir, fileName)
             originalFile.copyTo(commitFile, overwrite = true)
         }
+        writeLogs(commitID, commit)
         println("Changes are committed.")
     }
+}
+
+fun writeLogs(id: String, message: String) {
+    val author= configFile.readText()
+    val log = logFile.readText()
+    logFile.writeText("commit $id\n")
+    logFile.appendText("Author: $author\n")
+    logFile.appendText("$message\n")
+    logFile.appendText("\n$log")
 }
 
 //fun main(args: Array<String>) {
