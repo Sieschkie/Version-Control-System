@@ -11,10 +11,15 @@ Usage
 SVCS can be used via command-line interface (CLI) with the following commands:
 
 config: Get and set a username for commit authorship.
+
 add: Add a file to the index for tracking changes.
+
 commit: Save changes to tracked files with a commit message.
+
 log: View commit logs.
+
 checkout: Restore a file to its state at a specific commit.
+
 For detailed usage instructions and examples, refer to the SVCS Documentation.
 
 Getting Started
