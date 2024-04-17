@@ -1,10 +1,11 @@
 package svcs
 
 import java.io.File
+import java.util.*
 
 val workDir = File(System.getProperty("user.dir"))
 val vcsDir = File(workDir, "vcs")
-val commitsDir = File(workDir, "commits")
+val commitsDir = File(vcsDir, "commits")
 val configFile = vcsDir.resolve("config.txt")
 val indexFile = vcsDir.resolve("index.txt")
 val logFile = vcsDir.resolve("log.txt")
@@ -25,7 +26,7 @@ fun isValidInput(input: String): Boolean {
 
 fun makeDirAndFiles(){
     if (!vcsDir.exists()) vcsDir.mkdirs()
-    if (!commitsDir.exists()) vcsDir.mkdirs()
+    if (!commitsDir.exists()) commitsDir.mkdir()
     if (!configFile.exists()) configFile.createNewFile()
     if (!indexFile.exists()) indexFile.createNewFile()
     if (!logFile.exists()) logFile.createNewFile()
@@ -87,19 +88,50 @@ fun log() {
     }
 }
 
+fun checkChanges(trackedFiles: List<String>, lastCommitDir: File, commitID: String): Boolean {
+    var changed = false
+    trackedFiles.forEach { fileName ->
+        val originalFile = File(System.getProperty("user.dir"), fileName)
+        val commitFile = File(lastCommitDir, fileName)
+
+        if (!commitFile.exists() || !originalFile.readText().equals(commitFile.readText())) {
+            changed = true
+        }
+    }
+    return changed
+}
+
 fun commit(commit : String?) {
     if (commit == null) {
         println("Message was not passed.")
     } else {
+        val trackedFiles = indexFile.readLines()
+        val commitID = UUID.randomUUID().toString()
+        val commitDir = if (commitsDir.listFiles()?.isNotEmpty() == true) {
+            val lastCommitDir = commitsDir.listFiles()!!.last()
+            val changed = checkChanges(trackedFiles, lastCommitDir, commitID)
+            if (changed) {
+                File(commitsDir, commitID).apply { mkdir() }
+            } else {
+                println("Nothing to commit.")
+                return
+            }
+        } else {
+            File(commitsDir, commitID).apply { mkdir() }
+        }
+        trackedFiles.forEach { fileName ->
+            val originalFile = File(workDir, fileName)
+            val commitFile = File(commitDir, fileName)
+            originalFile.copyTo(commitFile, overwrite = true)
+        }
         println("Changes are committed.")
     }
-
 }
 
-fun main(args: Array<String>) {
-//fun main() { //test
+//fun main(args: Array<String>) {
+fun main() { //test
     makeDirAndFiles()
-    //val args = readln().split(" ") //test
+    val args = readln().split(" ") //test
     when(args.firstOrNull()?.lowercase()?.trim()) {
         null, "--help" -> help()
         "config" -> config(args.getOrNull(1)?.trim())
