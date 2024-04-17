@@ -88,7 +88,7 @@ fun log() {
     }
 }
 
-fun checkChanges(trackedFiles: List<String>, lastCommitDir: File, commitID: String): Boolean {
+fun checkChanges(trackedFiles: List<String>, lastCommitDir: File): Boolean {
     var changed = false
     trackedFiles.forEach { fileName ->
         val originalFile = File(System.getProperty("user.dir"), fileName)
@@ -111,7 +111,7 @@ fun commit(commit : String?) {
         val lastCommitID = logFile.readLines().firstOrNull()?.substringAfter("commit ")
         val commitDir = if (lastCommitID != null && commitsDir.listFiles()?.isNotEmpty() == true) {
             val lastCommitDir = File(commitsDir, lastCommitID)
-            val changed = checkChanges(trackedFiles, lastCommitDir, commitID)
+            val changed = checkChanges(trackedFiles, lastCommitDir)
             if (changed) {
                 File(commitsDir, commitID).apply { mkdir() }
             } else {
