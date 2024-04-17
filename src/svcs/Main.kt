@@ -21,10 +21,10 @@ fun help() {
 
 fun isValidInput(input: String): Boolean {
     val regex = Regex("^[a-zA-Z][a-zA-Z0-9_.]*$")
-    return input.isNotBlank() && input.length in 3..20 && regex.matches(input)
+    return input.isNotBlank() && input.length in 3..40 && regex.matches(input)
 }
 
-fun makeDirAndFiles(){
+fun makeDirAndFiles(){                            //checking and creating working files and directories
     if (!vcsDir.exists()) vcsDir.mkdirs()
     if (!commitsDir.exists()) commitsDir.mkdir()
     if (!configFile.exists()) configFile.createNewFile()
@@ -133,23 +133,24 @@ fun commit(commit : String?) {
 
 fun writeLogs(id: String, message: String) {
     val author= configFile.readText()
-    val log = logFile.readText()
+    val log = logFile.readText()//1mal valid
     logFile.writeText("commit $id\n")
     logFile.appendText("Author: $author\n")
     logFile.appendText("${message.filter{it !='"'}}\n")
     logFile.appendText("\n$log")
 }
 
-//fun main(args: Array<String>) {
-fun main() { //test
+fun main(args: Array<String>) {
+//fun main() { //test
     makeDirAndFiles()
-    val args = readln().split(" ") //test
+    //val args = readln().split(" ") //test
+    val arg = args.getOrNull(1)?.trim()
     when(args.firstOrNull()?.lowercase()?.trim()) {
         null, "--help" -> help()
-        "config" -> config(args.getOrNull(1)?.trim())
-        "add" -> add(args.getOrNull(1)?.trim())
+        "config" -> config(arg)
+        "add" -> add(arg)
         "log" -> log()
-        "commit" -> commit(args.getOrNull(1)?.trim())
+        "commit" -> commit(arg)
         "checkout" -> println("Restore a file.")
         else -> println("'${args[0]}' is not a SVCS command.")
     }
