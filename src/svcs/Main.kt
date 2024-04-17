@@ -2,7 +2,9 @@ package svcs
 
 import java.io.File
 import java.util.*
+import java.security.MessageDigest
 
+// Define directory and file paths
 val workDir = File(System.getProperty("user.dir"))
 val vcsDir = File(workDir, "vcs")
 val commitsDir = File(vcsDir, "commits")
@@ -10,6 +12,7 @@ val configFile = vcsDir.resolve("config.txt")
 val indexFile = vcsDir.resolve("index.txt")
 val logFile = vcsDir.resolve("log.txt")
 
+// Function to display available SVCS commands
 fun help() {
     println("These are SVCS commands:\n" +
             "config     Get and set a username.\n" +
@@ -20,11 +23,13 @@ fun help() {
 }
 
 fun isValidInput(input: String): Boolean {
+    // Regular expression to match valid input
     val regex = Regex("^[a-zA-Z][a-zA-Z0-9_.]*$")
     return input.isNotBlank() && input.length in 3..40 && regex.matches(input)
 }
 
-fun makeDirAndFiles(){                            //checking and creating working files and directories
+// Check and create necessary directories and files
+fun makeDirAndFiles(){
     if (!vcsDir.exists()) vcsDir.mkdirs()
     if (!commitsDir.exists()) commitsDir.mkdir()
     if (!configFile.exists()) configFile.createNewFile()
@@ -32,6 +37,7 @@ fun makeDirAndFiles(){                            //checking and creating workin
     if (!logFile.exists()) logFile.createNewFile()
 }
 
+// Function to handle 'config' command
 fun config(name: String?) {
     if (name == null) {
         val configValue = configFile.readText()
@@ -52,6 +58,7 @@ fun config(name: String?) {
     }
 }
 
+// Function to handle 'add' command
 fun add(trackedFile: String?) {
     if(trackedFile !== null) {
         if (trackedFile.isNotBlank()) {
@@ -80,6 +87,7 @@ fun add(trackedFile: String?) {
     }
 }
 
+// Function to display commit logs
 fun log() {
     if(logFile.length() == 0L) {                //is log.txt empty?
         println("No commits yet.") }
@@ -88,19 +96,35 @@ fun log() {
     }
 }
 
+// Function to check if there are changes in tracked files
 fun checkChanges(trackedFiles: List<String>, lastCommitDir: File): Boolean {
     var changed = false
+    val md = MessageDigest.getInstance("SHA-256")
+
     trackedFiles.forEach { fileName ->
         val originalFile = File(System.getProperty("user.dir"), fileName)
         val commitFile = File(lastCommitDir, fileName)
 
-        if (!commitFile.exists() || !originalFile.readText().equals(commitFile.readText())) {
+        if (!commitFile.exists() || !compareHashes(originalFile, commitFile, md)) {
             changed = true
+            return@forEach
         }
     }
     return changed
 }
 
+fun compareHashes(file1: File, file2: File, md: MessageDigest): Boolean {
+    // Compute hash for the first file
+    val hash1 = md.digest(file1.readBytes())
+
+    // Compute hash for the second file
+    val hash2 = md.digest(file2.readBytes())
+
+    // Compare the hashes
+    return hash1.contentEquals(hash2)
+}
+
+// Function to handle 'commit' command
 fun commit(commit : String?) {
     if (commit == null || commit.isBlank()) {
         println("Message was not passed.")
@@ -131,9 +155,10 @@ fun commit(commit : String?) {
     }
 }
 
+// Function to write commit logs
 fun writeLogs(id: String, message: String) {
     val author= configFile.readText()
-    val log = logFile.readText()//1mal valid
+    val log = logFile.readText()
     logFile.writeText("commit $id\n")
     logFile.appendText("Author: $author\n")
     logFile.appendText("${message.filter{it !='"'}}\n")
