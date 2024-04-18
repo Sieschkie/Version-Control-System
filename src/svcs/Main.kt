@@ -158,13 +158,31 @@ fun commit(commit : String?) {
 // Function to write commit logs
 fun writeLogs(id: String, message: String) {
     val author= configFile.readText()
-    val log = logFile.readText()
-    logFile.writeText("commit $id\n")
+    val log = logFile.readText()                             // Save commits
+    logFile.writeText("commit $id\n")                   // last commit on top
     logFile.appendText("Author: $author\n")
     logFile.appendText("${message.filter{it !='"'}}\n")
-    logFile.appendText("\n$log")
+    logFile.appendText("\n$log")                        // old commits add
 }
 
+fun checkout(commitID: String?) {
+    if (commitID == null) {
+        println("Commit id was not passed.")
+    } else {
+        val lastCommitDir = File(commitsDir, commitID)
+        if (!lastCommitDir.exists()) {
+            println("Commit does not exist.")
+        } else {                                            // If a commit with the given ID exists
+            val trackedFiles = indexFile.readLines()        // the contents of the tracked file should be restored
+            trackedFiles.forEach { fileName ->              // in accordance with this commit.
+                val originalFile = File(workDir, fileName)
+                val commitFile = File(lastCommitDir, fileName)
+                commitFile.copyTo(originalFile, overwrite = true)
+            }
+            println("Switched to commit $commitID.")
+        }
+    }
+}
 fun main(args: Array<String>) {
     makeDirAndFiles()
     val arg = args.getOrNull(1)?.trim()
@@ -174,7 +192,7 @@ fun main(args: Array<String>) {
         "add" -> add(arg)
         "log" -> log()
         "commit" -> commit(arg)
-        "checkout" -> println("Restore a file.")
+        "checkout" -> checkout(arg)
         else -> println("'${args[0]}' is not a SVCS command.")
     }
 }
