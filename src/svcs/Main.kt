@@ -36,6 +36,16 @@ fun makeDirAndFiles(){
     if (!indexFile.exists()) indexFile.createNewFile()
     if (!logFile.exists()) logFile.createNewFile()
 }
+// Error handling if a required file is missing
+fun checkFileExists(fileName: String, location: String): Boolean {
+    val file = File(location, fileName)
+    return if (file.exists()) {
+        true
+    } else {
+        println("Error: File '$fileName' not found in $location.")
+        false
+    }
+}
 
 // Function to handle 'config' command
 fun config(name: String?) {
@@ -113,6 +123,7 @@ fun checkChanges(trackedFiles: List<String>, lastCommitDir: File): Boolean {
     return changed
 }
 
+// Function to compare hashes of two files (Algorithm SHA-256)
 fun compareHashes(file1: File, file2: File, md: MessageDigest): Boolean {
     // Compute hash for the first file
     val hash1 = md.digest(file1.readBytes())
@@ -165,6 +176,7 @@ fun writeLogs(id: String, message: String) {
     logFile.appendText("\n$log")                        // old commits add
 }
 
+//
 fun checkout(commitID: String?) {
     if (commitID == null) {
         println("Commit id was not passed.")
@@ -183,6 +195,7 @@ fun checkout(commitID: String?) {
         }
     }
 }
+
 fun main(args: Array<String>) {
     makeDirAndFiles()
     val arg = args.getOrNull(1)?.trim()
@@ -196,3 +209,19 @@ fun main(args: Array<String>) {
         else -> println("'${args[0]}' is not a SVCS command.")
     }
 }
+/*
+    config should allow the user to set their own name or output an already existing name.
+If a user wants to set a new name, the program must overwrite the old one.
+
+    add should allow the user to set the name of a file that they want to track or output the names of tracked files.
+If the file does not exist, the program should inform a user that the file does not exist.
+
+    commit must be passed to the program along with a message (see examples). Save all changes.
+Each commit must be assigned a unique id. if there were no changes since the last commit, do not create a new commit.
+You don't need to optimize the storage of changes, just copy all the staged files to the commit folder every time.
+
+    log should show all the commits in reverse order.
+
+    The checkout command must be passed to the program together with the commit ID to indicate which commit should be used.
+If a commit with the given ID exists, the contents of the tracked file should be restored in accordance with this commit.
+ */
