@@ -36,16 +36,6 @@ fun makeDirAndFiles(){
     if (!indexFile.exists()) indexFile.createNewFile()
     if (!logFile.exists()) logFile.createNewFile()
 }
-// Error handling if a required file is missing
-fun checkFileExists(fileName: String, location: String): Boolean {
-    val file = File(location, fileName)
-    return if (file.exists()) {
-        true
-    } else {
-        println("Error: File '$fileName' not found in $location.")
-        false
-    }
-}
 
 // Function to handle 'config' command
 fun config(name: String?) {
@@ -106,7 +96,7 @@ fun log() {
     }
 }
 
-// Function to check if there are changes in tracked files
+// Checks if there are changes in the tracked files by comparing them with the files in the last commit.
 fun checkChanges(trackedFiles: List<String>, lastCommitDir: File): Boolean {
     var changed = false
     val md = MessageDigest.getInstance("SHA-256")
@@ -115,10 +105,14 @@ fun checkChanges(trackedFiles: List<String>, lastCommitDir: File): Boolean {
         val originalFile = File(System.getProperty("user.dir"), fileName)
         val commitFile = File(lastCommitDir, fileName)
 
-        if (!commitFile.exists() || !compareHashes(originalFile, commitFile, md)) {
-            changed = true
-            return@forEach
-        }
+        // Check if the commit file exists in the commits directory
+        if (commitFile.exists()) {
+            // If the hashes of the original and commit files don't match, set 'changed' to true
+            if (!compareHashes(originalFile, commitFile, md)) {
+                changed = true
+                return@forEach
+            }
+        } else println("Unable to checkout to this commit because some tracked files are missing in it.")
     }
     return changed
 }
