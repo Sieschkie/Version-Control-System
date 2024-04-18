@@ -203,19 +203,3 @@ fun main(args: Array<String>) {
         else -> println("'${args[0]}' is not a SVCS command.")
     }
 }
-/*
-    config should allow the user to set their own name or output an already existing name.
-If a user wants to set a new name, the program must overwrite the old one.
-
-    add should allow the user to set the name of a file that they want to track or output the names of tracked files.
-If the file does not exist, the program should inform a user that the file does not exist.
-
-    commit must be passed to the program along with a message (see examples). Save all changes.
-Each commit must be assigned a unique id. if there were no changes since the last commit, do not create a new commit.
-You don't need to optimize the storage of changes, just copy all the staged files to the commit folder every time.
-
-    log should show all the commits in reverse order.
-
-    The checkout command must be passed to the program together with the commit ID to indicate which commit should be used.
-If a commit with the given ID exists, the contents of the tracked file should be restored in accordance with this commit.
- */

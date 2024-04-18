@@ -30,4 +30,26 @@ Clone the SVCS repository to your local machine.
 Build the project using Kotlin compiler.
 Run the SVCS executable and start tracking changes in your project files.
 Contributing
-Contributions to SVCS are welcome! If you find a bug or have a feature request, please open an issue on the GitHub repository. Pull requests are also encouraged.
+Contributions to SVCS are welcome! If you find a bug or have a feature request, please open an issue on the GitHub 
+repository. Pull requests are also encouraged.
+
+
+    config 
+Allows the user to set their own name or output an existing one. If a user wants to set a new name, the program 
+overwrites the old one. The program also validates the input name for correctness and informs the user in case of an error.
+
+    add
+allow the user to set the name of a file that they want to track or output the names of tracked files. If the file does 
+not exist, the program informs a user that the file does not exist.
+
+    commit
+Must be invoked with a message. Saves all changes and assigns each commit a unique ID. If there are no changes since the
+last commit, a new commit is not created. The storage of changes is not optimized; all staged files are copied to the 
+commit folder every time.
+
+    log
+Displays all commits in reverse order.
+
+    checkout 
+command must be passed to the program together with the commit ID to indicate which commit to use.
+If a commit with the given ID exists, the contents of the tracked file are restored according to this commit.
